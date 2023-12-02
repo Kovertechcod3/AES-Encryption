@@ -1,0 +1,92 @@
+# AES Encryption and Decryption
+
+This code demonstrates how to encrypt and decrypt data using the AES (Advanced Encryption Standard) algorithm in CBC (Cipher Block Chaining) mode. It provides a basic implementation of AES encryption and decryption using the `pycryptodome` library.
+
+## Prerequisites
+
+Before running the code, make sure you have the following prerequisites installed:
+
+- Python 3.x
+- `pycryptodome` library
+
+You can install the `pycryptodome` library using pip:
+
+```
+pip install pycryptodome
+```
+
+## Usage
+
+1. Import the necessary modules:
+
+```python
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
+```
+
+2. Define the `encrypt_data` and `decrypt_data` functions:
+
+```python
+def encrypt_data(data, key):
+    # Generate a random IV
+    iv = get_random_bytes(16)
+    
+    # Create an AES cipher object
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    
+    # Encrypt the data and add padding
+    encrypted_data = cipher.encrypt(pad(data, AES.block_size))
+    
+    # Return the IV concatenated with the encrypted data
+    return iv + encrypted_data
+
+
+def decrypt_data(data, key):
+    # Extract the IV from the data
+    iv = data[:16]
+    
+    # Extract the encrypted data
+    encrypted_data = data[16:]
+    
+    # Create an AES cipher object
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    
+    # Decrypt the data and remove padding
+    decrypted_data = unpad(cipher.decrypt(encrypted_data), AES.block_size)
+    
+    # Return the decrypted data
+    return decrypted_data
+```
+
+3. Example usage:
+
+```python
+data = b"Hello, World!"
+key = b"thisisasecretkey"
+
+# Encrypt the data
+encrypted_data = encrypt_data(data, key)
+print("Encrypted data:", encrypted_data)
+
+# Decrypt the data
+decrypted_data = decrypt_data(encrypted_data, key)
+print("Decrypted data:", decrypted_data)
+```
+
+Make sure to replace the `data` and `key` variables with your own data and encryption key.
+
+## Notes
+
+- The code uses AES encryption with a 128-bit key size.
+- The CBC mode requires a random Initialization Vector (IV) for encryption and decryption.
+- Padding is applied to ensure that the data is a multiple of the AES block size.
+- The `pycryptodome` library is required for the code to work.
+
+## Security Considerations
+
+- This code provides a basic implementation of AES encryption and decryption. For real-world applications, additional security considerations should be taken into account, such as secure key management, key exchange, and protection against side-channel attacks.
+- It's important to keep the encryption key secure and ensure that it is not exposed or compromised.
+- This code does not handle the secure storage or transmission of encrypted data. It's recommended to use secure channels when transmitting or storing encrypted data.
+
+Please use this code responsibly and ensure that you understand the security implications before using it in production environments.
